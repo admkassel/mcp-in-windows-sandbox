@@ -4,7 +4,7 @@ Ein MCP-Server mit vollem Systemzugriff gehoert nicht auf den Rechner, auf dem
 die Arbeit liegt. Hier laeuft er in einer Windows Sandbox, die beim Schliessen
 verschwindet, und Claude Desktop kommt trotzdem daran.
 
-**Mit allen elf Fehlversuchen, die dazwischen lagen** — die sind der
+**Mit allen elf Fehlversuchen, die dazwischen lagen.** Die sind der
 eigentliche Inhalt dieses Dokuments.
 
 | | |
@@ -143,13 +143,21 @@ uvx windows-mcp serve --transport streamable-http --host 0.0.0.0 `
 Server startet, denn danach blockiert das Skript.
 
 Gemessen an drei aufeinanderfolgenden Starts: `172.31.192.74`,
-`172.31.206.101`, `172.31.206.111`. Das **Standardgateway blieb stabil**, die
-Zugangsbeschraenkung braucht also keine Pflege.
+`172.31.206.101`, `172.31.206.111`.
+
+> **Berichtigung, 15.09.2026.** Hier stand, das Standardgateway bleibe dabei
+> stabil. Das galt fuer drei Starts hintereinander und gilt **nicht** ueber
+> einen Neustart des Wirts hinweg. Danach zog das ganze Teilnetz um, von
+> `172.31.x` auf `172.23.x`, Gateway vorher `172.31.192.1`, nachher
+> `172.23.160.1`. Schaden entsteht nur dann keiner, wenn das Gateway bei jedem
+> Lauf frisch aus `Get-NetRoute` geholt wird und nirgends als feste Zahl im
+> Skript steht. **Drei gleiche Messungen aus derselben Lage sind kein Beweis
+> fuer eine Regel.**
 
 ### 3. Die Portweiterleitung auf dem Wirt
 
 Ohne sie muesste nach jedem Sandbox-Start die Konfigurationsdatei neu
-geschrieben werden — die fehleranfaelligste Stelle des ganzen Aufbaus.
+geschrieben werden, und das ist die fehleranfaelligste Stelle des ganzen Aufbaus.
 
 ```powershell
 netsh interface portproxy delete v4tov4 listenaddress=127.0.0.1 listenport=8765
@@ -299,7 +307,7 @@ Unexpected token … is not valid JSON
 ```
 
 `Set-Content -Encoding UTF8` schreibt in PowerShell 5.1 ein BOM an den
-Dateianfang. Die Pruefung direkt danach meldete "identisch, nichts verloren" —
+Dateianfang. Die Pruefung direkt danach meldete "identisch, nichts verloren",
 und war wertlos, denn PowerShell liest ueber ein BOM hinweg.
 
 > **Eine Pruefung mit dem falschen Werkzeug prueft nichts.**
@@ -360,7 +368,7 @@ or when --allow-http flag is provided
 Diese Meldung erscheint **nur, wenn man den Vermittler selbst von Hand
 aufruft.** Die Anwendung zeigte weiterhin nur "Server disconnected".
 
-Mit `--allow-http` war die Sache erledigt — **und damit auch die gesamte
+Mit `--allow-http` war die Sache erledigt, **und damit auch die gesamte
 Zertifikatsfrage**, ueber der vorher drei unschoene Varianten abgewogen worden
 waren, darunter ein eigener Eintrag im Vertrauensspeicher des Wirts.
 
@@ -377,6 +385,44 @@ waren, darunter ein eigener Eintrag im Vertrauensspeicher des Wirts.
 | Portweiterleitung setzen, als Administrator | ein Befehl |
 | Anwendung neu starten | ein Neustart |
 | Konfigurationsdatei | wird nicht mehr angefasst |
+
+### Und was nach einem Neustart des Wirts passiert
+
+Der Fall, den man beim Bauen vergisst, weil er erst Tage spaeter eintritt. Drei
+Dinge verhalten sich unterschiedlich, und genau die Mischung macht den Fehler
+schwer lesbar:
+
+| Was | ueberlebt den Neustart | Folge |
+|---|---|---|
+| Die Sandbox | nein, sie stirbt mit dem Wirt | Server weg, Firewallregel weg, Vorrat weg |
+| Die Portweiterleitung | **ja**, Systemeinstellung | zeigt auf eine IP, die es nicht mehr gibt |
+| Die Adressdatei | **ja**, liegt im Dateisystem | enthaelt eine Adresse aus dem Leben davor |
+| Das Teilnetz des Wirts | nein | auch das Gateway hat danach eine neue Adresse |
+
+Die Anwendung meldet beim Start dann `Request timed out`. Das sieht aus wie ein
+Ausfall des Servers und ist ein Rest der alten Einstellung.
+
+**Die Abhilfe ist eine exakte Grenze, kein Schaetzwert.** Das Brueckenskript
+vergleicht die Schreibzeit der Adressdatei mit
+`(Get-CimInstance Win32_OperatingSystem).LastBootUpTime`. Ist die Datei aelter
+als der letzte Start des Rechners, stammt sie aus einer Sandbox, die es nicht
+mehr gibt. Dann wird keine Bruecke gebaut, die alte Weiterleitung wird
+entfernt, und die Meldung sagt, was zu tun ist.
+
+Derselbe Gedanke traegt weiter, als man denkt: **jedes Lebenszeichen eines
+Dauerlaeufers, das vor dem Hochfahren geschrieben wurde, ist eine Leiche und
+kein Lebenszeichen**, egal wie jung die Datei ist. Wer nur Alter gegen Frist
+prueft, zeigt einen toten Dienst nach einem Neustart so lange gruen, wie seine
+Frist reicht.
+
+### Ein 401 ist ein Lebenszeichen
+
+Wer die Bruecke mit einem Pruefwerkzeug testet, das den Schluessel nicht kennt,
+bekommt `401 Nicht autorisiert`. Das liest sich wie ein Fehlschlag und ist das
+Gegenteil: **ein toter Port antwortet gar nicht, ein lebender Server ohne
+Anmeldung antwortet 401.** Der Weg ist damit bewiesen. Eine rote Zeile, die
+etwas anderes bedeutet als sie aussieht, kostet genauso viel Zeit wie eine
+gruene, die nichts misst.
 
 ### Die Wartezeit laesst sich abkuerzen
 
