@@ -1,0 +1,918 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>MCP in der Sandbox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+
+<style>
+  :root {
+    --grund:      #faf8f4;
+    --flaeche:    #ffffff;
+    --flaeche2:   #f2efe8;
+    --tinte:      #1a1c20;
+    --leise:      #6b6a66;
+    --rand:       #ddd8cd;
+    --wirt:       #24485c;
+    --wirt-hell:  #e6eef2;
+    --sand:       #9c6f2e;
+    --sand-hell:  #f6ecdb;
+    --fehler:     #9c3a2e;
+    --fehler-hell:#f8e8e5;
+    --gut:        #3f6b4a;
+
+    --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --grund:      #16171a;
+      --flaeche:    #1d1f23;
+      --flaeche2:   #24262b;
+      --tinte:      #e8e6e1;
+      --leise:      #9a978f;
+      --rand:       #33363c;
+      --wirt:       #7fb4cc;
+      --wirt-hell:  #1b2c35;
+      --sand:       #d6a55f;
+      --sand-hell:  #2b2418;
+      --fehler:     #d97a6c;
+      --fehler-hell:#2e1d1a;
+      --gut:        #7fb98d;
+    }
+  }
+  :root[data-theme="dark"] {
+    --grund:      #16171a;
+    --flaeche:    #1d1f23;
+    --flaeche2:   #24262b;
+    --tinte:      #e8e6e1;
+    --leise:      #9a978f;
+    --rand:       #33363c;
+    --wirt:       #7fb4cc;
+    --wirt-hell:  #1b2c35;
+    --sand:       #d6a55f;
+    --sand-hell:  #2b2418;
+    --fehler:     #d97a6c;
+    --fehler-hell:#2e1d1a;
+    --gut:        #7fb98d;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--grund);
+    color: var(--tinte);
+    font-family: var(--sans);
+    font-size: 16.5px;
+    line-height: 1.62;
+    margin: 0;
+    padding-inline: 20px;
+    padding-block: 0 96px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .bahn { max-width: 760px; margin-inline: auto; }
+  .schmal { max-width: 65ch; }
+
+  /* ---------------------------------------------------------- Kopf */
+  header {
+    padding-block: 72px 44px;
+    border-bottom: 1px solid var(--rand);
+    margin-bottom: 44px;
+  }
+  .kicker {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--sand);
+    margin: 0 0 18px;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: clamp(34px, 6vw, 52px);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    margin: 0 0 20px;
+  }
+  .lead {
+    font-family: var(--serif);
+    font-size: clamp(17px, 2.4vw, 20px);
+    line-height: 1.55;
+    color: var(--tinte);
+    margin: 0 0 26px;
+    max-width: 60ch;
+  }
+  .lead em { color: var(--sand); font-style: italic; }
+
+  .stand {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 26px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--leise);
+  }
+  .stand b { color: var(--tinte); font-weight: 500; }
+
+  /* ---------------------------------------------------------- Text */
+  h2 {
+    font-family: var(--serif);
+    font-size: clamp(24px, 3.6vw, 31px);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 64px 0 6px;
+  }
+  h2 + .unterzeile {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--leise);
+    margin: 0 0 24px;
+  }
+  h3 {
+    font-family: var(--sans);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.35;
+    margin: 36px 0 10px;
+    text-wrap: balance;
+  }
+  p { margin: 0 0 18px; max-width: 65ch; }
+  ul, ol { max-width: 65ch; padding-left: 1.25em; margin: 0 0 18px; }
+  li { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  a { color: var(--wirt); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--sand);
+    outline-offset: 2px;
+  }
+  code {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    background: var(--flaeche2);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* ------------------------------------------------- Befehlsblöcke */
+  /* Jeder Befehl sagt, WO er laeuft. Das ist hier keine Dekoration:
+     die Verwechslung der beiden Fenster war der haeufigste Fehler. */
+  .befehl {
+    margin: 0 0 22px;
+    border: 1px solid var(--rand);
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--flaeche);
+  }
+  .befehl > .ort {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 7px 14px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .befehl[data-ort="wirt"] > .ort { background: var(--wirt-hell); color: var(--wirt); }
+  .befehl[data-ort="sandbox"] > .ort { background: var(--sand-hell); color: var(--sand); }
+  .befehl > .ort span {
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    opacity: 0.85;
+  }
+  .befehl pre {
+    margin: 0;
+    padding: 14px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.55;
+    border-top: 1px solid var(--rand);
+  }
+
+  pre.ausgabe {
+    margin: 0 0 22px;
+    padding: 14px 16px;
+    background: var(--flaeche2);
+    border-left: 3px solid var(--leise);
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--tinte);
+  }
+
+  /* ------------------------------------------------------- Die Kette */
+  .kette {
+    margin: 0 0 32px;
+    padding: 20px;
+    background: var(--flaeche);
+    border: 1px solid var(--rand);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .glied {
+    display: grid;
+    grid-template-columns: 76px 1fr;
+    gap: 14px;
+    align-items: start;
+    padding: 11px 0;
+  }
+  .glied + .glied { border-top: 1px dashed var(--rand); }
+  .glied .zone {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 0 0;
+  }
+  .glied[data-zone="wirt"] .zone { color: var(--wirt); }
+  .glied[data-zone="sandbox"] .zone { color: var(--sand); }
+  .glied .was { font-family: var(--mono); font-size: 13px; line-height: 1.5; }
+  .glied .warum { font-size: 13.5px; color: var(--leise); margin-top: 3px; line-height: 1.5; }
+
+  /* --------------------------------------------------- Fehlversuche */
+  /* Nummeriert, weil es wirklich eine Abfolge war: jeder Fehlschlag
+     wurde erst sichtbar, nachdem der vorige behoben war. */
+  .fehler-liste { counter-reset: fv; display: flex; flex-direction: column; gap: 0; }
+  .fv {
+    counter-increment: fv;
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 16px;
+    padding: 22px 0;
+    border-top: 1px solid var(--rand);
+  }
+  .fv:last-child { border-bottom: 1px solid var(--rand); }
+  .fv::before {
+    content: counter(fv, decimal-leading-zero);
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fehler);
+    padding-top: 2px;
+  }
+  .fv h3 { margin: 0 0 8px; }
+  .fv p { margin: 0 0 10px; font-size: 15px; }
+  .fv p:last-child { margin-bottom: 0; }
+  .fv .meldung {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: var(--fehler-hell);
+    color: var(--fehler);
+    padding: 9px 12px;
+    border-radius: 3px;
+    margin: 0 0 10px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .fv .loesung {
+    font-size: 15px;
+    border-left: 2px solid var(--gut);
+    padding-left: 12px;
+  }
+  .fv .loesung b { color: var(--gut); font-weight: 600; }
+
+  /* ------------------------------------------------------- Merksatz */
+  .merksatz {
+    font-family: var(--serif);
+    font-size: clamp(19px, 3vw, 25px);
+    font-style: italic;
+    line-height: 1.4;
+    color: var(--tinte);
+    border-left: 3px solid var(--sand);
+    padding: 4px 0 4px 22px;
+    margin: 32px 0;
+    max-width: 52ch;
+    text-wrap: balance;
+  }
+
+  /* -------------------------------------------------------- Tabelle */
+  .tabelle-huelle { overflow-x: auto; margin: 0 0 24px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  th, td { text-align: left; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--rand); vertical-align: top; }
+  th {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--leise);
+  }
+  td code { background: none; padding: 0; }
+
+  /* -------------------------------------------------------- Hinweis */
+  .hinweis {
+    background: var(--flaeche2);
+    border-radius: 4px;
+    padding: 16px 18px;
+    margin: 0 0 24px;
+    font-size: 15px;
+  }
+  .hinweis p:last-child { margin-bottom: 0; }
+  .hinweis .titel {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sand);
+    display: block;
+    margin-bottom: 7px;
+  }
+
+  /* Dritte Zone, seit dem Nachtrag: ein eigenes Geraet im LAN.
+     Eigene Farbe, damit im Befehlsblock auf einen Blick steht, WO er laeuft. */
+  :root { --geraet: #3f6b4a; --geraet-hell: #e7f0e9; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --geraet: #7fb98d; --geraet-hell: #1b2a1f; }
+  }
+  :root[data-theme="dark"] { --geraet: #7fb98d; --geraet-hell: #1b2a1f; }
+  .befehl[data-ort="geraet"] > .ort { background: var(--geraet-hell); color: var(--geraet); }
+  .glied[data-zone="geraet"] .zone { color: var(--geraet); }
+
+  footer {
+    margin-top: 72px;
+    padding-top: 26px;
+    border-top: 1px solid var(--rand);
+    font-size: 14px;
+    color: var(--leise);
+  }
+  footer p { max-width: 65ch; }
+
+  @media (max-width: 560px) {
+    .glied { grid-template-columns: 1fr; gap: 4px; }
+    .fv { grid-template-columns: 1fr; gap: 6px; }
+    header { padding-block: 44px 32px; }
+  }
+</style>
+
+<div class="bahn">
+
+<header>
+  <p class="kicker">Windows &middot; MCP &middot; Isolation</p>
+  <h1>Eine Shell, die man wegwerfen kann</h1>
+  <p class="lead">Ein MCP-Server mit vollem Systemzugriff gehört nicht auf den Rechner, auf dem die Arbeit liegt. Hier läuft er in einer Windows Sandbox, die beim Schließen verschwindet, und der Assistent kommt trotzdem daran. <em>Mit allen elf Fehlversuchen, die dazwischen lagen.</em> Und seit September mit einer zweiten Bauart: einem eigenen Geraet im Netz, das sich nach einem Neustart selbst wieder anmeldet.</p>
+  <div class="stand">
+    <span><b>Gebaut</b> 14./15.09.2026</span>
+    <span><b>windows-mcp</b> 4.0.3</span>
+    <span><b>Protokoll</b> MCP 2025-06-18</span>
+    <span><b>Wirt</b> Windows 11, 40 GB</span>
+    <span><b>Nachtrag</b> 17. und 27.09.2026</span>
+  </div>
+</header>
+
+<h2>Das Problem</h2>
+<p class="unterzeile">Warum der naheliegende Weg der falsche ist</p>
+
+<p>Seit einem Windows-Update im September 2026 ist die Shell-Anbindung eines Cloud-Assistenten an den lokalen Rechner tot. Was fehlt, sind drei Dinge: <strong>löschen, umbenennen, Befehle ausführen.</strong> Dateien lesen und schreiben geht weiter über eine Brücke, aber ausführen nicht.</p>
+
+<p>Es gibt für Windows einen fertigen MCP-Server, der genau das zurückgibt, und eine fertige Erweiterung dafür. Sie zu installieren dauert zwei Minuten. Danach hat der Assistent <code>PowerShell</code>, <code>FileSystem</code>, <code>Registry</code>, <code>Process</code> und zwölf weitere Werkzeuge auf dem Arbeitsrechner.</p>
+
+<p>Die Sicherheitshinweise des Projekts selbst nennen ausdrücklich, wo man es <em>nicht</em> einsetzen soll: Arbeitsplatzrechner, Systeme mit sensiblen Daten, geteilte Systeme. Empfohlen wird eine VM mit Snapshot oder die Windows Sandbox.</p>
+
+<div class="merksatz">Was ein Werkzeug nicht können muss, soll es nicht können. Und wo ein Fehlgriff nichts kostet, ist der bessere Ort dafür.</div>
+
+<h3>Die Erweiterung löst es nicht</h3>
+<p>Sie kennt zwei Betriebsarten. <code>local</code> lässt den Server <strong>auf dem Arbeitsrechner</strong> laufen, und ihre Werkzeugliste ist eine reine Anzeige ohne Schalter: alles oder nichts. <code>remote</code> meint nicht die eigene Sandbox, sondern einen gehosteten Fremddienst mit eigenem Konto.</p>
+<p>Der eigene Server dagegen kann beides, was gebraucht wird: er spricht HTTP, und er lässt sich auf einzelne Werkzeuge beschränken.</p>
+
+<h2>Die Kette</h2>
+<p class="unterzeile">Vier Glieder, zwei Welten</p>
+
+<div class="kette">
+  <div class="glied" data-zone="wirt">
+    <div class="zone">Wirt</div>
+    <div>
+      <div class="was">Claude Desktop</div>
+      <div class="warum">Liest seine MCP-Server aus <code>claude_desktop_config.json</code> und startet jeden davon selbst als Prozess.</div>
+    </div>
+  </div>
+  <div class="glied" data-zone="wirt">
+    <div class="zone">Wirt</div>
+    <div>
+      <div class="was">cmd /c npx -y mcp-remote http://127.0.0.1:8765/mcp --allow-http --header "Authorization: Bearer …"</div>
+      <div class="warum">Der Vermittler. Er wird über stdio gestartet und spricht seinerseits HTTP. Ohne ihn nimmt die lokale Konfiguration keine Adresse an.</div>
+    </div>
+  </div>
+  <div class="glied" data-zone="wirt">
+    <div class="zone">Wirt</div>
+    <div>
+      <div class="was">netsh interface portproxy → 127.0.0.1:8765</div>
+      <div class="warum">Die Brücke. Die Sandbox bekommt bei jedem Start eine andere IP; die Weiterleitung hält die Adresse in der Konfiguration fest.</div>
+    </div>
+  </div>
+  <div class="glied" data-zone="sandbox">
+    <div class="zone">Sandbox</div>
+    <div>
+      <div class="was">windows-mcp serve --transport streamable-http --host 0.0.0.0 --port 8765 --tools PowerShell,FileSystem --ip-allowlist &lt;Wirt&gt;</div>
+      <div class="warum">Zwei Werkzeuge statt zwanzig, nur der Wirt darf anrufen, und ein Bearer-Schlüssel davor.</div>
+    </div>
+  </div>
+</div>
+
+<h2>Der Aufbau</h2>
+<p class="unterzeile">Sechs Schritte, drei davon einmalig</p>
+
+<h3>1. Ein Freigabeordner auf dem Wirt</h3>
+<p>Die Sandbox bekommt zwei Ordner eingehängt: einen <strong>nur lesbaren</strong> mit den Skripten und dem Arbeitsstand, und einen <strong>beschreibbaren</strong> für Ergebnisse. Der zweite ist der einzige Weg, eine Erkenntnis aus der Sandbox herauszubekommen, denn beim Schließen ist alles andere weg.</p>
+
+<div class="hinweis">
+  <span class="titel">Wichtig</span>
+  <p>Der Ergebnisordner muss vor dem Start existieren. Fehlt er, startet die Sandbox gar nicht erst. Das ist keine Schikane, sondern eine ehrliche Fehlermeldung.</p>
+</div>
+
+<h3>2. Die Sandbox startet sich selbst</h3>
+<p>Eine <code>.wsb</code>-Datei beschreibt die Sandbox. Der entscheidende Teil ist <code>LogonCommand</code>: damit ruft sie beim Anmelden ein eigenes Skript auf, und zu tun bleibt ein Doppelklick.</p>
+
+<div class="befehl" data-ort="wirt">
+  <div class="ort">Wirt <span>Datei sandbox.wsb</span></div>
+  <pre>&lt;Configuration&gt;
+  &lt;MemoryInMB&gt;16384&lt;/MemoryInMB&gt;
+  &lt;Networking&gt;Default&lt;/Networking&gt;
+  &lt;ProtectedClient&gt;Enable&lt;/ProtectedClient&gt;
+  &lt;MappedFolders&gt;
+    &lt;MappedFolder&gt;
+      &lt;HostFolder&gt;S:\SandboxShare&lt;/HostFolder&gt;
+      &lt;SandboxFolder&gt;C:\Users\WDAGUtilityAccount\Desktop\Austausch&lt;/SandboxFolder&gt;
+      &lt;ReadOnly&gt;true&lt;/ReadOnly&gt;
+    &lt;/MappedFolder&gt;
+    &lt;MappedFolder&gt;
+      &lt;HostFolder&gt;S:\SandboxErgebnisse&lt;/HostFolder&gt;
+      &lt;SandboxFolder&gt;C:\Users\WDAGUtilityAccount\Desktop\Ergebnisse&lt;/SandboxFolder&gt;
+      &lt;ReadOnly&gt;false&lt;/ReadOnly&gt;
+    &lt;/MappedFolder&gt;
+  &lt;/MappedFolders&gt;
+  &lt;LogonCommand&gt;
+    &lt;Command&gt;powershell.exe -ExecutionPolicy Bypass -NoExit -File "C:\Users\WDAGUtilityAccount\Desktop\Austausch\start.ps1"&lt;/Command&gt;
+  &lt;/LogonCommand&gt;
+&lt;/Configuration&gt;</pre>
+</div>
+
+<h3>3. Das Startskript in der Sandbox</h3>
+<p>Es holt <code>uv</code>, öffnet den Port in der Firewall der Sandbox, ermittelt die Adresse des Wirts und startet den Server. Die drei Zeilen, auf die es ankommt:</p>
+
+<div class="befehl" data-ort="sandbox">
+  <div class="ort">Sandbox <span>läuft automatisch beim Anmelden</span></div>
+  <pre># Der Wirt ist das Standardgateway der Sandbox.
+$gateway = (Get-NetRoute -DestinationPrefix "0.0.0.0/0" |
+            Sort-Object RouteMetric | Select-Object -First 1).NextHop
+
+# Die Firewallregel lebt nur, solange die Sandbox lebt.
+New-NetFirewallRule -DisplayName "MCP 8765" -Direction Inbound `
+    -LocalPort 8765 -Protocol TCP -Action Allow | Out-Null
+
+# Der Schluessel kommt aus der Umgebung, nie aus der Befehlszeile:
+# eine Befehlszeile steht in der Prozessliste.
+$env:WINDOWS_MCP_AUTH_KEY = (Get-Content "$Austausch\schluessel.txt" -Raw).Trim()
+
+uvx windows-mcp serve --transport streamable-http --host 0.0.0.0 `
+    --port 8765 --tools PowerShell,FileSystem --ip-allowlist $gateway</pre>
+</div>
+
+<div class="hinweis">
+  <span class="titel">Die eigene Adresse gehört in die Ergebnisse</span>
+  <p>Die Sandbox hängt an einem NAT-Netz mit DHCP und bekommt bei jedem Start eine andere IP. Gemessen an drei aufeinanderfolgenden Starts: <code>172.31.192.74</code>, <code>172.31.206.101</code>, <code>172.31.206.111</code>.</p>
+  <p><strong>Berichtigung.</strong> Hier stand, das Standardgateway bleibe dabei stabil. Das galt für drei Starts hintereinander und gilt <em>nicht</em> über einen Neustart des Wirts hinweg. Nach einem Neustart zog das ganze Teilnetz um, von <code>172.31.x</code> auf <code>172.23.x</code>, Gateway vorher <code>172.31.192.1</code>, nachher <code>172.23.160.1</code>. Schaden entsteht nur dann keiner, wenn das Gateway bei jedem Lauf frisch aus <code>Get-NetRoute</code> geholt wird und nirgends als feste Zahl im Skript steht. Drei gleiche Messungen aus derselben Lage sind kein Beweis für eine Regel.</p>
+  <p>Das Startskript schreibt die jeweils gültige Adresse in den Ergebnisordner, bevor es den Server startet. Danach blockiert es.</p>
+</div>
+
+<h3>4. Die Brücke auf dem Wirt</h3>
+<p>Ohne sie müsste nach jedem Sandbox-Start die Konfigurationsdatei neu geschrieben werden, und das ist die fehleranfälligste Stelle des ganzen Aufbaus. Die Weiterleitung lauscht nur auf <code>127.0.0.1</code> und ist von außen nicht erreichbar.</p>
+
+<div class="befehl" data-ort="wirt">
+  <div class="ort">Wirt <span>als Administrator, nach jedem Sandbox-Start</span></div>
+  <pre>netsh interface portproxy delete v4tov4 listenaddress=127.0.0.1 listenport=8765
+netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=8765 `
+      connectaddress=&lt;Sandbox-IP&gt; connectport=8765</pre>
+</div>
+
+<p>Sie überlebt einen Neustart des Wirts und zeigt dann ins Leere, bis die Sandbox wieder läuft. Das schadet nichts, sieht aber aus wie ein Fehler. <code>netsh interface portproxy show v4tov4</code> listet alle auf.</p>
+
+<h3>5. Der Eintrag in Claude Desktop</h3>
+<p>Er gehört in <code>claude_desktop_config.json</code>. Bei einer Installation aus dem Microsoft Store liegt sie <strong>nicht</strong> unter <code>%APPDATA%\Claude</code>, sondern im Paket-Container:</p>
+
+<div class="befehl" data-ort="wirt">
+  <div class="ort">Wirt <span>Pfad der Konfiguration</span></div>
+  <pre>%LOCALAPPDATA%\Packages\Claude_&lt;Paket-Id&gt;\LocalCache\Roaming\Claude\claude_desktop_config.json</pre>
+</div>
+
+<div class="befehl" data-ort="wirt">
+  <div class="ort">Wirt <span>der Eintrag, einmalig</span></div>
+  <pre>"mcpServers": {
+  "windows-mcp-sandbox": {
+    "command": "cmd",
+    "args": [
+      "/c", "npx", "-y", "mcp-remote",
+      "http://127.0.0.1:8765/mcp",
+      "--allow-http",
+      "--header", "Authorization: Bearer &lt;Schluessel&gt;"
+    ]
+  }
+}</pre>
+</div>
+
+<h3>6. Prüfen, bevor man sich freut</h3>
+<p>Ein Portklopfer beweist nur, dass etwas lauscht. Der eigentliche Nachweis ist ein echter MCP-Handshake und danach ein echter Werkzeugaufruf, dessen Antwort selbst sagt, <em>wo</em> er gelaufen ist:</p>
+
+<pre class="ausgabe">Server:  windows-mcp 4.0.3
+2 Werkzeuge:
+PowerShell      Shell/command execution …
+FileSystem      Manages file system operations …
+
+tools/call PowerShell → $env:COMPUTERNAME; $env:USERNAME
+C2E98CD1-EBE7-4
+WDAGUtilityAccount</pre>
+
+<p><strong>Zwei</strong> Werkzeuge heißt: die Beschränkung greift. <code>WDAGUtilityAccount</code> heißt: der Befehl lief in der Sandbox. Achtzehn Werkzeuge hießen: es ist der Server auf dem Arbeitsrechner, und dann stimmt etwas nicht.</p>
+
+<h2>Die elf Fehlversuche</h2>
+<p class="unterzeile">Der eigentliche Ertrag</p>
+
+<p>Jeder wurde erst sichtbar, nachdem der vorige behoben war. Deshalb die Nummerierung: es war wirklich eine Abfolge, keine Liste.</p>
+
+<div class="fehler-liste">
+
+  <div class="fv">
+    <div>
+      <h3>Die Prüfung lief im falschen Fenster</h3>
+      <p>Ein <code>Test-NetConnection</code> von der Sandbox zur Sandbox meldete <code>True</code>. Sichtbar wurde es erst an einem Detail der Ausgabe:</p>
+      <div class="meldung">SourceAddress : 172.31.192.74
+RemoteAddress : 172.31.192.74</div>
+      <p class="loesung"><b>Lehre:</b> Eine Prüfung, die von sich selbst zu sich selbst geht, prüft nichts. Seither gibt jeder solche Befehl <code>$env:COMPUTERNAME</code> mit aus, damit im Ergebnis steht, wo er lief.</p>
+    </div>
+  </div>
+
+  <div class="fv">
+    <div>
+      <h3>Der geplante Test maß das Falsche</h3>
+      <p>Geplant war, die Erreichbarkeit auf Port 445 zu prüfen. Das misst SMB, nicht den Weg. Ein Nein hätte zwei Ursachen haben können, Netz zu oder SMB aus, und wäre nicht verwertbar gewesen.</p>
+      <p class="loesung"><b>Stattdessen:</b> in der Sandbox einen eigenen Lauscher auf einem freien Port hinstellen und gegen diesen prüfen. Dann bedeutet ein Nein genau eine Sache.</p>
+    </div>
+  </div>
+
+  <div class="fv">
+    <div>
+      <h3>Die Freigabe zeigte einen Mischzustand</h3>
+      <p>Nach Änderungen auf dem Wirt sah die laufende Sandbox: eine Datei neu, eine als <code>.tmp</code>-Zwischendatei, eine ganz fehlend, eine im alten Stand. Auf dem Wirt war alles korrekt.</p>
+      <p class="loesung"><b>Lehre:</b> Die nur lesbare Freigabe wird nicht zuverlässig nachgeführt. Wer in einer laufenden Sandbox mit Dateien arbeitet, die der Wirt seither geändert hat, arbeitet womöglich mit einem Stand, den es so nie gab. Änderungen brauchen einen Neustart der Sandbox.</p>
+    </div>
+  </div>
+
+  <div class="fv">
+    <div>
+      <h3>Sandbox und Wirt sehen im Terminal gleich aus</h3>
+      <p>Dreimal an einem Abend landete ein Befehl im falschen Fenster. Kein Bedienfehler, sondern ein Aufbaufehler: zwei identisch aussehende Konsolen.</p>
+      <p class="loesung"><b>Behoben durch:</b> <code>$host.ui.RawUI.WindowTitle</code> und einen farbigen Kopf mit Rechner- und Benutzername ganz oben im Startskript. Kosmetik, die ein echtes Problem löst.</p>
+    </div>
+  </div>
+
+  <div class="fv">
+    <div>
+      <h3>Die Konfigurationsdatei lag woanders</h3>
+      <p>Gesucht unter <code>%APPDATA%\Claude</code>, wie üblich. Der Ordner existierte nicht einmal.</p>
+      <p class="loesung"><b>Grund:</b> Eine Installation aus dem Microsoft Store schreibt nicht nach <code>%APPDATA%</code>, sondern in ihren Paket-Container unter <code>%LOCALAPPDATA%\Packages\</code>.</p>
+    </div>
+  </div>
+
+  <div class="fv">
+    <div>
+      <h3>Die Suche war zu flach</h3>
+      <p>Eine rekursive Suche mit <code>-Depth 3</code> fand nichts. Die Datei liegt fünf Ebenen tief. Auf dieses Nichtergebnis hin wurde ein funktionierendes Skript als Sackgasse gesperrt.</p>
+      <p class="loesung"><b>Lehre:</b> Ein Nichtfund bei begrenzter Suchtiefe ist kein Beweis für Nichtexistenz. Entweder die Tiefe nennen, oder das Ergebnis nicht als "gibt es nicht" verbuchen.</p>
+    </div>
+  </div>
+
+  <div class="fv">
+    <div>
+      <h3>Ein unsichtbares Byte-Order-Mark</h3>
+      <p><code>Set-Content -Encoding UTF8</code> schreibt in PowerShell 5.1 ein BOM an den Dateianfang. Der Start scheiterte mit:</p>
+      <div class="meldung">App-Einstellungen konnten nicht geladen werden:
+Unexpected token … is not valid JSON</div>
+      <p>Die Prüfung direkt danach meldete "identisch, nichts verloren", und war wertlos, denn PowerShell liest über ein BOM hinweg.</p>
+      <p class="loesung"><b>Lehre:</b> Eine Prüfung mit dem falschen Werkzeug prüft nichts. Gelesen wird die Datei nicht von PowerShell, sondern von einem JSON-Leser. <b>Lösung:</b> <code>[System.IO.File]::WriteAllText($p, $text, (New-Object System.Text.UTF8Encoding($false)))</code> und danach das erste Byte prüfen: <code>123</code> ist die geschweifte Klammer, <code>239</code> ist ein BOM.</p>
+    </div>
+  </div>
+
+  <div class="fv">
+    <div>
+      <h3>Die Adressform wird nicht angenommen</h3>
+      <p>Ein Eintrag mit <code>"type": "http"</code> und <code>"url"</code> führte beim Start zu:</p>
+      <div class="meldung">Die folgenden Einträge sind keine gültigen
+MCP-Server-Konfigurationen und wurden übersprungen</div>
+      <p class="loesung"><b>Grund:</b> Die lokale Konfiguration erwartet einen Server, den die Anwendung selbst startet, also <code>command</code> und <code>args</code>. Eine bloße Adresse genügt dort nicht. Der Konnektor-Dialog der Oberfläche nimmt Adressen an, verlangt dann aber HTTPS und bietet kein Feld für Kopfzeilen.</p>
+    </div>
+  </div>
+
+  <div class="fv">
+    <div>
+      <h3>Das falsche npx</h3>
+      <p><code>Get-Command npx</code> liefert in PowerShell bevorzugt <code>npx.ps1</code>. Das ist ein PowerShell-Skript, keine ausführbare Datei, und lässt sich nicht als Prozess starten.</p>
+      <p class="loesung"><b>Lösung:</b> gezielt nach <code>npx.cmd</code> suchen und abbrechen, wenn der gefundene Pfad auf <code>.ps1</code> endet.</p>
+    </div>
+  </div>
+
+  <div class="fv">
+    <div>
+      <h3>Eine Batch-Datei ohne Interpreter</h3>
+      <p>Mit <code>npx.cmd</code> als <code>command</code> meldete die Anwendung nur:</p>
+      <div class="meldung">Server disconnected</div>
+      <p>Von Hand aufgerufen lief derselbe Befehl tadellos durch bis <code>Proxy established successfully</code>. Der Unterschied lag im Start, nicht im Weg.</p>
+      <p class="loesung"><b>Lösung:</b> <code>"command": "cmd"</code> und <code>"/c", "npx"</code> als erste Argumente. Das löst zugleich das Leerzeichen in <code>C:\Program Files\nodejs</code>.</p>
+    </div>
+  </div>
+
+  <div class="fv">
+    <div>
+      <h3>Der Vermittler verweigert HTTP</h3>
+      <p>Diese Meldung erscheint nur, wenn man den Vermittler selbst von Hand aufruft. Die Anwendung zeigte weiterhin nur "Server disconnected":</p>
+      <div class="meldung">Error: Non-HTTPS URLs are only allowed for localhost
+or when --allow-http flag is provided</div>
+      <p class="loesung"><b>Lösung:</b> <code>--allow-http</code>. <b>Und damit erledigte sich die gesamte Zertifikatsfrage.</b> Selbstsigniertes Zertifikat, Eintrag im Vertrauensspeicher des Wirts, alles nicht nötig.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="merksatz">Wenn eine Meldung nur sagt, dass etwas abgebrochen ist, ruft man denselben Befehl von Hand auf. Der Grund steht fast immer dort, wo niemand hinsieht.</div>
+
+<h2>Was danach bleibt</h2>
+<p class="unterzeile">Ehrliche Bilanz</p>
+
+<div class="tabelle-huelle">
+<table>
+  <thead>
+    <tr><th>Nach jedem Sandbox-Start</th><th>Aufwand</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Sandbox-Datei doppelklicken</td><td>ein Doppelklick, dann zwei bis fünf Minuten warten</td></tr>
+    <tr><td>Brückenskript als Administrator</td><td>ein Befehl</td></tr>
+    <tr><td>Anwendung neu starten</td><td>ein Neustart</td></tr>
+    <tr><td>Konfigurationsdatei</td><td>wird nicht mehr angefasst</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Und was nach einem Neustart des Wirts passiert</h3>
+<p>Das ist der Fall, den man beim Bauen vergisst, weil er erst Tage später eintritt. Drei Dinge verhalten sich dabei unterschiedlich, und genau die Mischung macht den Fehler schwer lesbar:</p>
+<div class="tabelle-huelle">
+<table>
+  <thead>
+    <tr><th>Was</th><th>Überlebt den Neustart</th><th>Folge</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Die Sandbox</td><td>nein, sie stirbt mit dem Wirt</td><td>Server weg, Firewallregel weg, Vorrat weg</td></tr>
+    <tr><td>Die Portweiterleitung</td><td><strong>ja</strong>, sie ist eine Systemeinstellung</td><td>zeigt auf eine IP, die es nicht mehr gibt</td></tr>
+    <tr><td>Die Adressdatei</td><td><strong>ja</strong>, sie liegt im Dateisystem</td><td>enthält eine Adresse aus dem Leben davor</td></tr>
+    <tr><td>Das Teilnetz des Wirts</td><td>nein</td><td>auch das Gateway hat danach eine neue Adresse</td></tr>
+  </tbody>
+</table>
+</div>
+<p>Die Anwendung meldet beim Start dann <em>Request timed out</em>. Das sieht aus wie ein Ausfall des Servers und ist ein Rest der alten Einstellung.</p>
+<p><strong>Die Abhilfe ist eine exakte Grenze, kein Schätzwert.</strong> Das Brückenskript vergleicht die Schreibzeit der Adressdatei mit <code>(Get-CimInstance Win32_OperatingSystem).LastBootUpTime</code>. Ist die Datei älter als der letzte Start des Rechners, stammt sie aus einer Sandbox, die es nicht mehr gibt. Dann wird keine Brücke gebaut, die alte Weiterleitung wird entfernt, und die Meldung sagt, was zu tun ist.</p>
+<p>Derselbe Gedanke trägt weiter, als man denkt. Jedes Lebenszeichen einer dauerhaft laufenden Anwendung, das <em>vor</em> dem Hochfahren geschrieben wurde, ist eine Leiche und kein Lebenszeichen, egal wie jung die Datei ist. Wer nur Alter gegen Frist prüft, zeigt einen toten Dienst nach einem Neustart so lange grün, wie seine Frist reicht.</p>
+
+<h3>Ein 401 ist ein Lebenszeichen</h3>
+<p>Wer die Brücke mit einem Prüfwerkzeug testet, das den Schlüssel nicht kennt, bekommt <code>401 Nicht autorisiert</code>. Das liest sich wie ein Fehlschlag und ist das Gegenteil: ein toter Port antwortet gar nicht, ein lebender Server ohne Anmeldung antwortet 401. Der Weg ist damit bewiesen. Eine rote Zeile, die etwas anderes bedeutet als sie aussieht, kostet genauso viel Zeit wie eine grüne, die nichts misst.</p>
+
+<h3>Die Wartezeit lässt sich abkürzen</h3>
+<p>Jeder Start holt <code>uv</code> und die Pakete des Servers neu aus dem Netz. Wer sie einmal in einen Ordner der Freigabe legt und das Startskript von dort kopieren lässt, spart die Minuten: Kopieren von einer lokalen Freigabe dauert Sekunden. Der Paketordner wird über <code>UV_CACHE_DIR</code> gesetzt.</p>
+
+<h3>Die Grenzen, die bleiben</h3>
+<ul>
+  <li>Die Sandbox muss <strong>vor</strong> der Anwendung laufen. Ein Vermittler, der beim Start ins Leere greift, wird nicht von selbst wieder lebendig.</li>
+  <li>Der Schlüssel steht in der Konfigurationsdatei und in einer Datei auf dem Wirt. Er schützt keine Daten, sondern nur den Zugang zur Wegwerf-Umgebung. Sein Verlust kostet nichts, aber er gehört aus Sicherungen ausgeschlossen.</li>
+  <li>Die Portweiterleitung ist eine Systemeinstellung und bleibt bestehen, bis sie jemand entfernt.</li>
+  <li>Alles in der Sandbox ist beim Schließen weg. Jede Erkenntnis muss vorher in den Ergebnisordner.</li>
+</ul>
+
+<h3>Was in die Sandbox nicht gehört</h3>
+<p>Zugangsdaten, Tokens, Wiederherstellungscodes. Der Arbeitsstand dort sollte eine <strong>Kopie aus der Sicherung</strong> sein, nicht das Original: dann ist jeder Start zugleich eine Probe, ob sich die Sicherung überhaupt aufbauen lässt. Was dabei fehlt, fällt genau dort auf, wo es nichts kostet.</p>
+
+
+<h2>Nachtrag: vom Wegwerf-Ort zum festen Geraet</h2>
+<p class="unterzeile">Zwei Bauarten, zwei Zwecke</p>
+
+<p>Der Aufbau oben hat einen blinden Fleck, und er faellt erst auf, wenn man ihn braucht: <strong>die Sandbox hat keinen echten Bildschirm.</strong> Sie eignet sich hervorragend fuer Befehle und Dateien, also fuer <code>PowerShell</code> und <code>FileSystem</code>. Sobald aber etwas gesehen oder angeklickt werden soll, in einem Programm mit Oberflaeche, ist sie der falsche Ort: was dort auf dem Schirm steht, ist die Sandbox selbst.</p>
+
+<p>Deshalb kam im September ein zweites Verfahren dazu, und zwar nicht als Ersatz. Beide laufen nebeneinander, weil sie verschiedene Fragen beantworten.</p>
+
+<div class="tabelle-huelle">
+<table>
+  <thead>
+    <tr><th></th><th>Sandbox auf dem Wirt</th><th>Eigenes Geraet im LAN</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Adresse</td><td>wechselt bei jedem Start</td><td>fest, aus der Fritzbox dauerhaft zugewiesen</td></tr>
+    <tr><td>Bruecke noetig</td><td>ja, <code>netsh portproxy</code></td><td><strong>nein</strong></td></tr>
+    <tr><td>Firewallregel</td><td>stirbt mit der Sandbox</td><td>bleibt, nur privates Netzprofil</td></tr>
+    <tr><td>Schluessel</td><td>optional, Wegwerf-Umgebung</td><td><strong>Pflicht</strong></td></tr>
+    <tr><td>Werkzeuge</td><td>zwei, bewusst beschraenkt</td><td>alle zwanzig, wegen <code>Screenshot</code></td></tr>
+    <tr><td>Zustand</td><td>beim Schliessen leer</td><td>bleibt</td></tr>
+    <tr><td>Bildschirm</td><td>der der Sandbox</td><td><strong>echter Bildschirm</strong></td></tr>
+    <tr><td>Bei einem Fehlgriff</td><td>kostet nichts</td><td>kostet ein Geraet</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="merksatz">Der einzige belastbare Grund fuer das zweite Geraet ist die Bildschirmaufnahme auf echter Oberflaeche. Alles andere kann die Sandbox auch, und sie kostet im Fehlerfall nichts.</div>
+
+<h3>Die Kette wird kuerzer</h3>
+<p>Von den vier Gliedern oben fallen zwei weg. Die Bruecke wird nicht gebraucht, weil die Adresse feststeht, und damit entfaellt auch der Schritt, den man nach jedem Start von Hand machen musste.</p>
+
+<div class="kette">
+  <div class="glied" data-zone="wirt">
+    <div class="zone">Wirt</div>
+    <div>
+      <div class="was">Claude Desktop</div>
+      <div class="warum">Wie gehabt: liest seine Server aus der Konfiguration und startet jeden selbst.</div>
+    </div>
+  </div>
+  <div class="glied" data-zone="wirt">
+    <div class="zone">Wirt</div>
+    <div>
+      <div class="was">cmd /c npx -y mcp-remote http://192.168.x.y:8766/mcp --allow-http --header "Authorization: Bearer …"</div>
+      <div class="warum">Derselbe Vermittler, nur zeigt er jetzt auf eine feste Adresse im Netz statt auf die Bruecke.</div>
+    </div>
+  </div>
+  <div class="glied" data-zone="geraet">
+    <div class="zone">Geraet</div>
+    <div>
+      <div class="was">windows-mcp serve --transport streamable-http --host 0.0.0.0 --port 8766</div>
+      <div class="warum">Als geplante Aufgabe bei der Anmeldung, nicht als Dienst. Eigener Port und eigener Schluessel je Geraet.</div>
+    </div>
+  </div>
+</div>
+
+<h3>Eigener Port, eigener Schluessel, je Geraet</h3>
+<p>Beim zweiten Geraet wird aus einer Kleinigkeit eine Regel. Zwei Konnektoren mit demselben Namen und demselben Port gehen nicht, und ein Schluessel, der auf beiden Geraeten gilt, oeffnet im Verlustfall beide. Also: das erste bekommt 8765, das zweite 8766, und jedes erzeugt seinen eigenen Schluessel beim ersten Lauf.</p>
+
+<h2>Der Selbststart</h2>
+<p class="unterzeile">Der Teil, den man beim Bauen vergisst</p>
+
+<p>Eine geplante Aufgabe mit <code>LogonType=Interactive</code> startet nach einem Neustart <strong>nicht</strong>, solange niemand angemeldet ist. Das Geraet steht dann da, ist am Strom, ist im Netz, und antwortet nicht. Das faellt monatelang nicht auf, wenn ohnehin immer jemand eine Sitzung offen hat.</p>
+
+<h3>Der naheliegende Ausweg traegt nur halb</h3>
+<p>Ein Windows-Dienst oder eine S4U-Aufgabe laeuft auch ohne Anmeldung. Sie laeuft dann aber <strong>in Sitzung 0, ohne Desktop</strong>. Gemessen: <code>PowerShell</code> und <code>FileSystem</code> funktionieren dort, <code>Screenshot</code>, <code>Click</code> und <code>Type</code> nicht.</p>
+
+<div class="merksatz">Wer eine Aufgabe robuster macht, indem er ihr den Desktop nimmt, hat sie nicht robuster gemacht, sondern kleiner.</div>
+
+<p>Das ist bitter, weil genau der Desktop der Grund fuer das zweite Geraet war. Wer den Fernzugang nur fuer Dateien und Befehle braucht, kann den Weg gehen. Wer Bildschirme will, kann es nicht.</p>
+
+<h3>Der Weg, der traegt: automatische Anmeldung</h3>
+<p>Die Anmeldung erzeugt die Sitzung, die Aufgabe haengt sich daran. Das Kennwort gehoert dabei <strong>nicht</strong> in die Registry, sondern als LSA-Geheimnis abgelegt. Beide Wege dorthin, <code>netplwiz</code> und das Sysinternals-Werkzeug, tun genau das.</p>
+
+<div class="befehl" data-ort="geraet">
+  <div class="ort">Geraet <span>Abnahmeprobe, nicht die Einrichtung</span></div>
+  <pre>$k = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon'
+(Get-ItemProperty $k) | Select-Object AutoAdminLogon, DefaultUserName,
+                                      DefaultDomainName, AutoLogonSID
+"Kennwort im Klartext vorhanden: " + ($null -ne (Get-ItemProperty $k).DefaultPassword)</pre>
+</div>
+
+<pre class="ausgabe">AutoAdminLogon    : 1
+DefaultUserName   : admin
+DefaultDomainName : &lt;Rechnername&gt;
+AutoLogonSID      : S-1-5-21-…-1001
+Kennwort im Klartext vorhanden: False</pre>
+
+<p><code>AutoLogonSID</code> steht nur da, wenn das Kennwort als Geheimnis abgelegt wurde. Und <strong>False</strong> in der letzten Zeile ist hier das Guetezeichen, nicht der Mangel: stuende dort ein Wert, laege das Kennwort im Klartext in der Registry.</p>
+
+<div class="hinweis">
+  <span class="titel">Die Probe, die wirklich zaehlt</span>
+  <p>Nicht die Registry lesen, sondern es tun: <strong>neu starten und danach nichts anfassen.</strong> Nicht verbinden, nicht anmelden. Dann von einem anderen Rechner aus den Port pruefen. Erst ein <code>True</code> aus dieser Lage belegt, dass das Geraet sich selbst zurueckholt.</p>
+</div>
+
+<h3>Was wirkt wann</h3>
+<p>Es haengt nicht daran, ob eine Fernsitzung verbunden ist, sondern ob die Sitzung <strong>entsperrt</strong> ist. Eine getrennte, aber entsperrte Sitzung hat weiterhin einen Desktop.</p>
+
+<div class="tabelle-huelle">
+<table>
+  <thead>
+    <tr><th>Zustand der Sitzung</th><th>PowerShell, FileSystem</th><th>Screenshot</th><th>Click, Type</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>entsperrt, verbunden oder getrennt</td><td>ja</td><td>echter Desktop</td><td><strong>ja</strong></td></tr>
+    <tr><td>gesperrt</td><td>ja</td><td>Sperrbildschirm</td><td>nein</td></tr>
+    <tr><td>abgemeldet</td><td colspan="3">nichts, die Aufgabe laeuft nicht</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Sieben weitere Fehlversuche</h2>
+<p class="unterzeile">Aus dem zweiten Aufbau, keiner davon oben</p>
+
+<div class="fehler-liste">
+
+  <div class="fv">
+    <div>
+      <h3>Ein Wert, der nur an einer von zwei Stellen ankommt</h3>
+      <p>Das Einrichtungsskript nimmt den Port als Parameter und setzt damit die Firewallregel. An die geplante Aufgabe reicht es ihn nicht weiter, und die startet den Server mit dessen Vorgabe. Ergebnis: Regel fuer 8766, Server auf 8765.</p>
+      <p>Auf dem ersten Geraet faellt das nie auf, dort ist beides dieselbe Zahl.</p>
+      <p class="loesung"><b>Lehre:</b> Ein Fehler, den beide Seiten als Erfolg melden, wird erst beim Benutzer sichtbar, und der sucht dann an der falschen Stelle, naemlich bei der Firewall. <b>Abhilfe:</b> die Argumentzeile der Aufgabe nach dem Einrichten zuruecklesen, nicht nur die Regel.</p>
+    </div>
+  </div>
+
+  <div class="fv">
+    <div>
+      <h3>Ein Rueckgabewert, der aussieht wie ein Absturz</h3>
+      <p>Der Aufgabenplaner meldete nach dem ersten Start:</p>
+      <div class="meldung">LastTaskResult : 267009</div>
+      <p>Das ist <code>0x00041301</code> und heisst <em>die Aufgabe laeuft gerade</em>. Gleichzeitig lauschte noch nichts auf dem Port, weil der Paketmanager in dem Moment 92 Python-Pakete installierte.</p>
+      <p class="loesung"><b>Lehre:</b> Ein Wert, den man nicht kennt, sieht aus wie ein Fehler. Nachschlagen ist billiger als reparieren. Und der erste Start eines solchen Servers dauert laenger als die Geduld, die man ihm zugesteht.</p>
+    </div>
+  </div>
+
+  <div class="fv">
+    <div>
+      <h3>Das Fenster ist der Server</h3>
+      <p>Am naechsten Morgen war der Konnektor tot. Der Planer sagte:</p>
+      <div class="meldung">LastTaskResult : 3221225786</div>
+      <p><code>0xC000013A</code>, <code>STATUS_CONTROL_C_EXIT</code>: jemand hat das Konsolenfenster geschlossen. Das minimierte Fenster in der Leiste war nicht die Ausgabe des Servers, es war der Server.</p>
+      <p class="loesung"><b>Lehre:</b> Wer einen Dauerlaeufer sichtbar laufen laesst, muss dazusagen, dass das Fenster nicht zugemacht werden darf. Minimieren ist harmlos, schliessen ist das Ende.</p>
+    </div>
+  </div>
+
+  <div class="fv">
+    <div>
+      <h3>Zwei Wege zum selben Dienst</h3>
+      <p>Nach dem Wiederbeleben von Hand lief der Server, aber die geplante Aufgabe stand auf <code>Ready</code>. Der Port gehoerte dem handgestarteten Prozess.</p>
+      <p>Folge: bei der naechsten Anmeldung haette die Aufgabe versucht, einen zweiten Server auf denselben Port zu legen, und waere daran gescheitert. Sie haette einen Fehler gemeldet, obwohl nichts kaputt war.</p>
+      <p class="loesung"><b>Lehre:</b> Zwei Wege zum selben Dienst sind einer zu viel. Der zweite meldet den ersten als Stoerung.</p>
+    </div>
+  </div>
+
+  <div class="fv">
+    <div>
+      <h3>Ping ist keine Lebendprobe</h3>
+      <p>Dasselbe Geraet antwortete am Abend auf Ping mit 3,5 ms und eine Stunde spaeter gar nicht mehr, waehrend der Port die ganze Zeit antwortete. Welche Aenderung dazwischen es war, ist nicht gemessen und wird nicht geraten.</p>
+      <p class="loesung"><b>Lehre:</b> Ein Geraet, das nicht auf Ping antwortet, kann auf dem Port antworten, der zaehlt. Ueberwacht wird der Port, nicht ICMP. Und <code>TcpTestSucceeded</code> zusammen mit einem <code>401</code> ist der vollstaendige Beleg: der eine sagt, die Tuer ist offen, der andere, dass dahinter jemand steht.</p>
+    </div>
+  </div>
+
+  <div class="fv">
+    <div>
+      <h3>Ein Name zeigt nach dem Umbenennen auf zwei Adressen</h3>
+      <p>Das Geraet hiess im Lauf eines Abends dreimal anders. Danach loeste sein Name auf <strong>zwei</strong> IPv4-Adressen auf, und die tote stand in der Antwort vor der lebenden.</p>
+      <div class="meldung">&lt;name&gt;.local   ->  192.168.x.237  (Ping False, ARP unreachable)
+                     192.168.x.250  (Ping True,  ARP reachable)</div>
+      <p class="loesung"><b>Lehre:</b> Eine Namensaufloesung sagt, welche Adressen einmal zu einem Namen gehoert haben, nicht welche jetzt antwortet. In den Konnektor gehoert die feste IP, nicht der Name.</p>
+    </div>
+  </div>
+
+  <div class="fv">
+    <div>
+      <h3>Ein fehlendes Werkzeug als Beweis genommen</h3>
+      <p>Die Frage war, ob auf dem ersten Geraet die automatische Anmeldung eingerichtet ist. Das Werkzeug dafuer lag nirgends auf der Platte, und die Konsolensitzung trug keinen Benutzer. Daraus wurde ein <em>nein</em>. Falsch, gleich doppelt.</p>
+      <p>Das Werkzeug braucht man genau einmal, danach darf es weg. Und die leere Konsolensitzung war ein Artefakt des Zusehens: verbindet sich derselbe Benutzer per Fernsitzung, uebernimmt Windows die bestehende Sitzung, sie wandert von <code>console</code> nach <code>rdp-tcp#0</code>.</p>
+      <p class="loesung"><b>Lehre:</b> Ein fehlendes Werkzeug beweist nicht, dass die Arbeit nicht getan wurde. Eine Spur der Arbeit schon. Und wer aus einer Abwesenheit schliesst, misst oft nur, wo er geschaut hat.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="hinweis">
+  <span class="titel">Noch eine Falle: "nie" heisst nicht nie</span>
+  <p>Die Zeitgrenze fuer den Energiesparmodus auf 0 zu setzen verhindert das Einschlafen <strong>aus Langeweile</strong>. Ein Geraet mit modernem Standby geht trotzdem schlafen, wenn der Netzschalter gedrueckt oder der Deckel geschlossen wird. Und <code>powercfg /devicequery wake_armed</code> zeigte danach genau ein einziges Geraet, das ueberhaupt wecken darf. Weder Tastatur noch Netzkarte standen darin.</p>
+</div>
+
+<h3>Was aus dem ersten Teil unveraendert gilt</h3>
+<ul>
+  <li><strong>Ein 401 ist ein Lebenszeichen.</strong> Gilt hier genauso, und es ist die schnellste Fernprobe, die es gibt.</li>
+  <li><strong>Der Schluessel kommt aus der Umgebung, nie aus der Befehlszeile.</strong> Was als Argument uebergeben wird, steht in der Prozessliste.</li>
+  <li><strong>Ein Lebenszeichen, das vor dem Hochfahren geschrieben wurde, ist eine Leiche.</strong> Der Gedanke traegt auch hier.</li>
+  <li><strong>Die Konfigurationsdatei liegt im Paket-Container</strong>, nicht unter <code>%APPDATA%</code>, und sie will <code>command</code> und <code>args</code>, keine blosse Adresse.</li>
+</ul>
+
+<h3>Und was beim zweiten Geraet dazukommt</h3>
+<ul>
+  <li><strong>Die Rechte bleiben beschraenkt.</strong> Der Server laeuft nicht erhoeht. Ein Fernzugang mit vollem Systemzugriff waere ein Fernzugang mit Administratorrechten, und dann haengt alles am Schluessel.</li>
+  <li><strong>Die Firewallregel gilt nur fuer das private Netzprofil.</strong> Wer das Geraet mitnimmt, hat im fremden Netz keinen offenen Port.</li>
+  <li><strong>Eine Datei, die auf genau einem Geraet liegt, ist keine Datei, sondern eine Wette auf dieses Geraet.</strong> Beim Aufbau des zweiten fiel auf, dass zwei Skripte nur auf dem ersten lagen, in keiner Sicherung.</li>
+</ul>
+
+<div class="merksatz">Was zweimal funktioniert hat, ist ein Verfahren. Was einmal funktioniert hat, war ein Abend.</div>
+
+
+<footer>
+  <p>Geschrieben nach einem Aufbau am 14. und 15. September 2026, ergaenzt nach zwei weiteren Aufbauten am 17. und 27. September 2026. Alle Ausgaben und Fehlermeldungen sind aus dem tatsächlichen Verlauf übernommen, Pfade und Namen sind ersetzt. Die verwendeten Bausteine sind <code>windows-mcp</code> (CursorTouch, MIT), <code>mcp-remote</code>, <code>uv</code> und die Windows Sandbox.</p>
+</footer>
+
+</div>
+
+</body></html>
