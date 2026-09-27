@@ -63,7 +63,13 @@ Diese Seite beschreibt deren Einsatz, sie enthält keinen Code daraus.
 
 ## Lizenz
 
-Noch nicht festgelegt. Vor dem Veröffentlichen entscheiden: ohne Lizenzangabe
-gilt volles Urheberrecht, also darf niemand den Text weiterverwenden. Für einen
-Erfahrungsbericht ist CC BY 4.0 die naheliegende Wahl, aber das ist eine
-Entscheidung und keine Formalie.
+**CC BY 4.0** (Creative Commons Namensnennung 4.0 International), siehe
+[`LICENSE`](LICENSE).
+
+Teilen, bearbeiten und weiterverwenden ist erlaubt, auch kommerziell. Bedingung
+ist die Namensnennung, ein Link auf die Lizenz und ein Hinweis auf Änderungen.
+
+    "Eine Shell, die man wegwerfen kann" von Frank Dickmann, CC BY 4.0
+
+Die im Text genannten Werkzeuge haben eigene Lizenzen und sind hiervon nicht
+erfasst; sie werden beschrieben, nicht mitgeliefert.

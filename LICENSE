@@ -1,21 +1,42 @@
-MIT License
+Eine Shell, die man wegwerfen kann
+Copyright (c) 2026 Frank Dickmann
 
-Copyright (c) 2026 admkassel
+Dieser Text und die ihn tragende Seite (index.html) stehen unter der Lizenz
+Creative Commons Namensnennung 4.0 International (CC BY 4.0).
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Das heisst in Klartext:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+  Erlaubt  Teilen, kopieren, weiterverbreiten, in jedem Format.
+           Bearbeiten, umbauen, darauf aufbauen, auch kommerziell.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+  Bedingung  Angemessene Namensnennung, ein Link auf die Lizenz, und ein
+             Hinweis, ob Aenderungen vorgenommen wurden. Das darf in jeder
+             vernuenftigen Form geschehen, aber nicht so, dass der Eindruck
+             entsteht, der Lizenzgeber unterstuetze die Weiterverwendung.
+
+  Keine weiteren Einschraenkungen  Es duerfen keine zusaetzlichen Klauseln
+             oder technischen Massnahmen eingesetzt werden, die anderen
+             rechtlich etwas verbieten, was die Lizenz erlaubt.
+
+Der verbindliche Lizenztext steht hier und gilt im Zweifel vor der
+Zusammenfassung oben:
+
+  https://creativecommons.org/licenses/by/4.0/legalcode.de   (deutsch)
+  https://creativecommons.org/licenses/by/4.0/legalcode      (englisch)
+
+Kurzform fuer die Namensnennung:
+
+  "Eine Shell, die man wegwerfen kann" von Frank Dickmann, CC BY 4.0
+
+---
+
+Nicht von dieser Lizenz erfasst sind die im Text genannten Werkzeuge. Sie
+haben ihre eigenen Lizenzen und werden hier nur beschrieben, nicht mitgeliefert:
+
+  windows-mcp   CursorTouch, MIT
+  mcp-remote
+  uv            Astral, MIT / Apache-2.0
+
+Der Text gibt Erfahrungen aus einem konkreten Aufbau wieder. Er ist keine
+Betriebsanleitung und keine Zusicherung: wer ihm folgt, prueft selbst, ob die
+beschriebenen Schritte fuer seine Lage taugen. Ohne Gewaehr.
